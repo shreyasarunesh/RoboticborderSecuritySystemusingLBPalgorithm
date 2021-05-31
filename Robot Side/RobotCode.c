@@ -18,23 +18,10 @@ unsigned long int r=0, i = 0,z=0,j;
 unsigned char tx0_flag=0;
 unsigned char rxdata;
 unsigned char tx_flag;
-unsigned char tx1_flag;
-unsigned char uart1rx[255];
-unsigned char lat[40];
 
 
 int main(void)
 {
-initTimer0(); //Init Timer for delay functions - defined in ocf_lpc176x_lib.c
-initTimer1(); //Init Timer for delay functions - defined in ocf_lpc176x_lib.c
-//LPC_GPIO1->FIODIR = 0x07F80000;
-UART0_Init();
-UART1_Init();	
-tx_flag = 0xff;	
-LPC_GPIO1->FIODIR = 0x0F000000;
-LPC_GPIO2->FIODIR = 0x00003C00;
-LPC_PINCON->PINSEL3 |= 0xC0000000;		//P1.31 as AD0.5
-LPC_SC->PCONP |= (1<<12);				//enable the peripheral ADC
 
 
 while(1)
@@ -91,15 +78,15 @@ LPC_GPIO1->FIOSET =0x02000000;
 //
 void forward(void)
 {
-LPC_GPIO1->FIOCLR =0x0F000000;
-LPC_GPIO1->FIOSET =0x0A000000;	
+LPC_GPIO1->FIOCLR =0x0A000000;
+LPC_GPIO1->FIOSET =0x0F000000;	
 
 }
 //
 void reverse(void)
 {
 LPC_GPIO1->FIOCLR =0x0F000000;
-LPC_GPIO1->FIOSET =0x05000000;	
+LPC_GPIO1->FIOSET =0x08000000;	
 	
 }
 
