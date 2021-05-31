@@ -1,5 +1,8 @@
 #include<LPC17xx.h>
 #include<stdio.h>
+#include "ocf_lpc176x_lib.h"
+#define	Ref_Vtg		3.300
+
 
 void delay(unsigned int r1);
 void UART0_Init(void);
@@ -8,6 +11,8 @@ void turn_left(void);
 void turn_right(void);
 void forward(void);
 void reverse(void);
+void hold(void);
+void release(void);
 
 unsigned long int r=0, i = 0,z=0,j;
 unsigned char tx0_flag=0;
@@ -16,13 +21,7 @@ unsigned char tx_flag;
 unsigned char tx1_flag;
 unsigned char uart1rx[255];
 unsigned char lat[40];
-unsigned char vtg1;
-unsigned char vtg[3];
-unsigned char vtg2;
-float in_vtg1;
-unsigned int adc_temp;
-int echoTime1=0,echoTime2=0;
-float distance1=0,distance2=0;
+
 
 int main(void)
 {
@@ -37,13 +36,6 @@ LPC_GPIO2->FIODIR = 0x00003C00;
 LPC_PINCON->PINSEL3 |= 0xC0000000;		//P1.31 as AD0.5
 LPC_SC->PCONP |= (1<<12);				//enable the peripheral ADC
 
-LPC_GPIO0->FIODIR |= TRIG1;    //Set P0.2(TRIG) as output
-LPC_GPIO0->FIODIR &= ~(ECHO1); //Set P0.3(ECHO) as input (explicitly)
-LPC_GPIO0->FIOCLR |= TRIG1;    //Set P0.2 LOW initially
-
-LPC_GPIO0->FIODIR |= TRIG2;    //Set P0.2(TRIG) as output
-LPC_GPIO0->FIODIR &= ~(ECHO2); //Set P0.3(ECHO) as input (explicitly)
-LPC_GPIO0->FIOCLR |= TRIG2;    //Set P0.2 LOW initially
 
 while(1)
 	
@@ -56,6 +48,16 @@ while(1)
         if(rxdata=='R')
 		{
 			turn_right();
+			rxdata=0;
+		}
+        if(rxdata=='H')
+		{
+			hold();
+			rxdata=0;
+		}
+		if(rxdata=='r')
+		{
+			release();
 			rxdata=0;
 		}
 		if(rxdata=='F')
@@ -98,5 +100,8 @@ void reverse(void)
 {
 LPC_GPIO1->FIOCLR =0x0F000000;
 LPC_GPIO1->FIOSET =0x05000000;	
+	
+}
+
 	
 }
