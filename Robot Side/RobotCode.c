@@ -89,22 +89,23 @@ while(1)
     }
 
 //
+void turn_left(void)
+{
+LPC_GPIO1->FIOCLR =0x0F000000;
+LPC_GPIO1->FIOSET =0x08000000;	
+
+}
+//
 void turn_right(void)
 {
 LPC_GPIO1->FIOCLR =0x0F000000;
 LPC_GPIO1->FIOSET =0x02000000;	
 }
 
-void turn_left(void)
-{
-LPC_GPIO1->FIOCLR =0x0F000000;
-LPC_GPIO1->FIOSET =0x08000000;	
-}
-
 //
 void forward(void)
 {
-LPC_GPIO1->FIOCLR =0x00003C00;
+LPC_GPIO1->FIOCLR =0x0F000000;
 LPC_GPIO1->FIOSET =0x0A000000;	
 
 }
@@ -126,14 +127,14 @@ LPC_GPIO2->FIOSET = 0x00002000;
 void release(void)
 {
 LPC_GPIO2->FIOCLR = 0x00003C00;
-LPC_GPIO2->FIOSET = 0x0F000000;	
+LPC_GPIO2->FIOSET = 0x00001000;	
 	
 }
 //
 
 void arm_forward(void)
 {
-LPC_GPIO2->FIOCLR = 0x0F000000;
+LPC_GPIO2->FIOCLR = 0x00003C00;
 LPC_GPIO2->FIOSET = 0x00000800;	
 	
 }
