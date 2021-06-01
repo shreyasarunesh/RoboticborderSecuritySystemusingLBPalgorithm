@@ -12,6 +12,8 @@ void forward(void);
 void reverse(void);
 void hold(void);
 void release(void);
+void arm_forward(void);
+void arm_backward(void);
 
 unsigned long int r=0, i = 0,z=0,j;
 unsigned char tx0_flag=0;
@@ -69,45 +71,49 @@ while(1)
 			rxdata=0;
 			tx_flag=0xff;
 		}
-		if(rxdata=='H')
+		if(rxdata=='B')
 		{
-			hold();
+			reverse();
 			rxdata=0;
 		}
-		if(rxdata=='r')
+        if(rxdata=='f')
 		{
-			release();
+			arm_forward();
 			rxdata=0;
 		}
-		
+		if(rxdata=='b')
+		{
+			arm_backward();
+			rxdata=0;
+
     }
 
 //
 void turn_left(void)
 {
-LPC_GPIO1->FIOCLR =0x0B000000;
-LPC_GPIO1->FIOSET =0x04000000;	
+LPC_GPIO1->FIOCLR =0x0F000000;
+LPC_GPIO1->FIOSET =0x08000000;	
 
 }
 //
 void turn_right(void)
 {
-LPC_GPIO1->FIOCLR =0x0B000000;
-LPC_GPIO1->FIOSET =0x03000000;	
+LPC_GPIO1->FIOCLR =0x0F000000;
+LPC_GPIO1->FIOSET =0x02000000;	
 }
 
 //
 void forward(void)
 {
-LPC_GPIO1->FIOCLR =0x0A000000;
-LPC_GPIO1->FIOSET =0x0B000000;	
+LPC_GPIO1->FIOCLR =0x0F000000;
+LPC_GPIO1->FIOSET =0x0A000000;	
 
 }
 //
 void reverse(void)
 {
-LPC_GPIO1->FIOCLR =0x0B000000;
-LPC_GPIO1->FIOSET =0x02000000;	
+LPC_GPIO1->FIOCLR =0x0F000000;
+LPC_GPIO1->FIOSET =0x05000000;	
 	
 }
 
@@ -120,8 +126,23 @@ LPC_GPIO2->FIOSET = 0x00002000;
 //
 void release(void)
 {
-LPC_GPIO2->FIOCLR = 0x00007C00;
-LPC_GPIO2->FIOSET = 0x00005000;	
+LPC_GPIO2->FIOCLR = 0x00003C00;
+LPC_GPIO2->FIOSET = 0x00001000;	
+	
+}
+//
+
+void arm_forward(void)
+{
+LPC_GPIO2->FIOCLR = 0x00003C00;
+LPC_GPIO2->FIOSET = 0x00000800;	
+	
+}
+//
+void arm_backward(void)
+{
+LPC_GPIO2->FIOCLR = 0x00003C00;
+LPC_GPIO2->FIOSET = 0x00000400;	
 	
 }
 //
