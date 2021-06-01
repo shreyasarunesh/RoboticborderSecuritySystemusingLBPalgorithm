@@ -3,7 +3,6 @@
 #include "ocf_lpc176x_lib.h"
 #define	Ref_Vtg		3.300
 
-
 void delay(unsigned int r1);
 void UART0_Init(void);
 void UART1_Init(void);
@@ -13,6 +12,8 @@ void forward(void);
 void reverse(void);
 void hold(void);
 void release(void);
+void arm_forward(void);
+void arm_backward(void);
 
 unsigned long int r=0, i = 0,z=0,j;
 unsigned char tx0_flag=0;
@@ -21,6 +22,10 @@ unsigned char tx_flag;
 unsigned char tx1_flag;
 unsigned char uart1rx[255];
 unsigned char lat[40];
+unsigned char vtg1;
+unsigned char vtg[3];
+unsigned char vtg2;
+float in_vtg1;
 
 
 int main(void)
@@ -33,6 +38,8 @@ UART1_Init();
 tx_flag = 0xff;	
 LPC_GPIO1->FIODIR = 0x0F000000;
 LPC_GPIO2->FIODIR = 0x00003C00;
+LPC_PINCON->PINSEL3 |= 0xC0000000;		//P1.31 as AD0.5
+LPC_SC->PCONP |= (1<<12);				//enable the peripheral ADC
 
 
 while(1)
@@ -69,6 +76,15 @@ while(1)
 			reverse();
 			rxdata=0;
 		}
+        if(rxdata=='f')
+		{
+			arm_forward();
+			rxdata=0;
+		}
+		if(rxdata=='b')
+		{
+			arm_backward();
+			rxdata=0;
 
     }
 
@@ -112,6 +128,21 @@ void release(void)
 {
 LPC_GPIO2->FIOCLR = 0x00003C00;
 LPC_GPIO2->FIOSET = 0x00001000;	
+	
+}
+//
+
+void arm_forward(void)
+{
+LPC_GPIO2->FIOCLR = 0x00003C00;
+LPC_GPIO2->FIOSET = 0x00000800;	
+	
+}
+//
+void arm_backward(void)
+{
+LPC_GPIO2->FIOCLR = 0x00003C00;
+LPC_GPIO2->FIOSET = 0x00000400;	
 	
 }
 //
