@@ -12,8 +12,6 @@ void forward(void);
 void reverse(void);
 void hold(void);
 void release(void);
-void arm_forward(void);
-void arm_backward(void);
 
 unsigned long int r=0, i = 0,z=0,j;
 unsigned char tx0_flag=0;
@@ -71,21 +69,17 @@ while(1)
 			rxdata=0;
 			tx_flag=0xff;
 		}
-		if(rxdata=='B')
+		if(rxdata=='H')
 		{
-			reverse();
+			hold();
 			rxdata=0;
 		}
-        if(rxdata=='f')
+		if(rxdata=='r')
 		{
-			arm_forward();
+			release();
 			rxdata=0;
 		}
-		if(rxdata=='b')
-		{
-			arm_backward();
-			rxdata=0;
-
+		
     }
 
 //
@@ -128,21 +122,6 @@ void release(void)
 {
 LPC_GPIO2->FIOCLR = 0x00003C00;
 LPC_GPIO2->FIOSET = 0x00001000;	
-	
-}
-//
-
-void arm_forward(void)
-{
-LPC_GPIO2->FIOCLR = 0x00003C00;
-LPC_GPIO2->FIOSET = 0x00000800;	
-	
-}
-//
-void arm_backward(void)
-{
-LPC_GPIO2->FIOCLR = 0x00003C00;
-LPC_GPIO2->FIOSET = 0x00000400;	
 	
 }
 //
