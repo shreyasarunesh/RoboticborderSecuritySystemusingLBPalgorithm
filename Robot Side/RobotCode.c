@@ -26,6 +26,7 @@ unsigned char vtg1;
 unsigned char vtg[3];
 unsigned char vtg2;
 float in_vtg1;
+unsigned int adc_temp;
 
 
 int main(void)
@@ -40,6 +41,7 @@ LPC_GPIO1->FIODIR = 0x0F000000;
 LPC_GPIO2->FIODIR = 0x00003C00;
 LPC_PINCON->PINSEL3 |= 0xC0000000;		//P1.31 as AD0.5
 LPC_SC->PCONP |= (1<<12);				//enable the peripheral ADC
+
 
 
 while(1)
@@ -85,6 +87,23 @@ while(1)
 		{
 			arm_backward();
 			rxdata=0;
+        }
+
+        if(rxdata=='T')
+		{
+			temp_value();
+			tx0_flag = 0;
+			LPC_UART0->THR='T';
+			while(tx0_flag==0x00);
+			tx0_flag=0;
+//			delay(250);
+			
+			LPC_UART0->THR=vtg[2];
+			while(tx0_flag==0x00);
+			tx0_flag=0;
+			rxdata=0;
+			delay(250);
+		}
 
     }
 
@@ -145,4 +164,6 @@ LPC_GPIO2->FIOCLR = 0x00003C00;
 LPC_GPIO2->FIOSET = 0x00000400;	
 	
 }
+
+//
 //
