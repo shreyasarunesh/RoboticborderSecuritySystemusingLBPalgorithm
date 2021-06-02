@@ -97,6 +97,16 @@ while(1)
 			while(tx0_flag==0x00);
 			tx0_flag=0;
 //			delay(250);
+			//
+			LPC_UART0->THR=vtg[0];
+			while(tx0_flag==0x00);
+			tx0_flag=0;
+//			delay(250);
+			//
+			LPC_UART0->THR=vtg[1];
+			while(tx0_flag==0x00);
+			tx0_flag=0;
+			rxdata=0;
 			
 			LPC_UART0->THR=vtg[2];
 			while(tx0_flag==0x00);
@@ -167,9 +177,9 @@ LPC_GPIO2->FIOSET = 0x00000400;
 
 void temp_value(void)
 {
-	  LPC_ADC->ADCR = (1<<5)|(1<<21)|(1<<24);										
+	  LPC_ADC->ADCR = (1<<5)|(1<<21)|(1<<24);									//0x01200001;//ADC0.5, start conversion and operational	
 		for(i=0;i<2000;i++);																								//delay for conversion
-		while((adc_temp = LPC_ADC->ADGDR) == 0x50000000);		
+		while((adc_temp = LPC_ADC->ADGDR) == 0x80000000);		//wait till 'done' bit is 1, indicates conversion complete
 		adc_temp = LPC_ADC->ADGDR;
 		adc_temp >>= 4;
 		adc_temp &= 0x00000FFF;																	//12 bit ADC
