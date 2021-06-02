@@ -165,5 +165,17 @@ LPC_GPIO2->FIOSET = 0x00000400;
 	
 }
 
+void temp_value(void)
+{
+	  LPC_ADC->ADCR = (1<<5)|(1<<21)|(1<<24);										
+		for(i=0;i<2000;i++);																								//delay for conversion
+		while((adc_temp = LPC_ADC->ADGDR) == 0x50000000);		
+		adc_temp = LPC_ADC->ADGDR;
+		adc_temp >>= 4;
+		adc_temp &= 0x00000FFF;																	//12 bit ADC
+		in_vtg1 = ((adc_temp * 330)/4096);	
+	  sprintf(vtg,"%3.2f",in_vtg1);
+	
+}
 //
 //
