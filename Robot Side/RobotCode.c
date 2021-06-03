@@ -308,8 +308,6 @@ void temp_value(void)
 	  sprintf(vtg,"%3.2f",in_vtg1);
 	
 }
-//
-//
 
 void automatic(void)
 {
@@ -323,16 +321,20 @@ void automatic(void)
 		echoTime1 = stopTimer0(); //Stop counting and save value(us) in echoTime
 
 		distance1 = ((0.0343 * echoTime1)*10)/2;	
-		//sprintf(vtg,"%3.2f",distance1);
-//		LPC_TIM0->TC = 0x00;
+		sprintf(vtg,"%3.2f",distance1);
+		LPC_TIM0->TC = 0x00;
 
 		LPC_GPIO0->FIOPIN |= TRIG2;
 		delayUS(10);
 		LPC_GPIO0->FIOCLR |= TRIG2;
 
-	
-		//sprintf(vtg1,"%3.2f",distance2);
+		while(!(LPC_GPIO0->FIOPIN & ECHO2)); //Wait for a HIGH on ECHO pin
+		startTimer1(); //Start counting
+		while(LPC_GPIO0->FIOPIN & ECHO2); //Wait for a LOW on ECHO pin
+		echoTime2 = stopTimer1(); //Stop counting and save value(us) in echoTime
 
-//		LPC_TIM0->TC = 0X00;
+		distance2 = ((0.0343 * echoTime2)*10)/2;	
+		sprintf(vtg1,"%3.2f",distance2);
+		LPC_TIM0->TC = 0X00;
 
 }
