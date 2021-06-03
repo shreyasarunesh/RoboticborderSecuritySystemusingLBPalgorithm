@@ -322,7 +322,15 @@ void automatic(void)
 		while(LPC_GPIO0->FIOPIN & ECHO1); //Wait for a LOW on ECHO pin
 		echoTime1 = stopTimer0(); //Stop counting and save value(us) in echoTime
 
-			
+		distance1 = ((0.0343 * echoTime1)*10)/2;	
+		//sprintf(vtg,"%3.2f",distance1);
+//		LPC_TIM0->TC = 0x00;
+
+		LPC_GPIO0->FIOPIN |= TRIG2;
+		delayUS(10);
+		LPC_GPIO0->FIOCLR |= TRIG2;
+
+	
 		//sprintf(vtg1,"%3.2f",distance2);
 
 //		LPC_TIM0->TC = 0X00;
