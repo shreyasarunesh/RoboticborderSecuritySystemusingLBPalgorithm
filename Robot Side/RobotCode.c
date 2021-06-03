@@ -2,6 +2,10 @@
 #include<stdio.h>
 #include "ocf_lpc176x_lib.h"
 #define	Ref_Vtg		3.300
+#define TRIG1 (1<<10) //P0.10
+#define ECHO1 (1<<11) //P0.11
+#define TRIG2 (1<<19) //P0.19
+#define ECHO2 (1<<20) //P0.20
 
 void delay(unsigned int r1);
 void UART0_Init(void);
@@ -14,6 +18,9 @@ void hold(void);
 void release(void);
 void arm_forward(void);
 void arm_backward(void);
+void temp_value(void);
+void stop(void);
+void stop2(void);
 
 unsigned long int r=0, i = 0,z=0,j;
 unsigned char tx0_flag=0;
@@ -27,7 +34,8 @@ unsigned char vtg[3];
 unsigned char vtg2;
 float in_vtg1;
 unsigned int adc_temp;
-
+int echoTime1=0,echoTime2=0;
+float distance1=0,distance2=0;
 
 int main(void)
 {
@@ -42,7 +50,13 @@ LPC_GPIO2->FIODIR = 0x00003C00;
 LPC_PINCON->PINSEL3 |= 0xC0000000;		//P1.31 as AD0.5
 LPC_SC->PCONP |= (1<<12);				//enable the peripheral ADC
 
+LPC_GPIO0->FIODIR |= TRIG1;    //Set P0.2(TRIG) as output
+LPC_GPIO0->FIODIR &= ~(ECHO1); //Set P0.3(ECHO) as input (explicitly)
+LPC_GPIO0->FIOCLR |= TRIG1;    //Set P0.2 LOW initially
 
+LPC_GPIO0->FIODIR |= TRIG2;    //Set P0.2(TRIG) as output
+LPC_GPIO0->FIODIR &= ~(ECHO2); //Set P0.3(ECHO) as input (explicitly)
+LPC_GPIO0->FIOCLR |= TRIG2;    //Set P0.2 LOW initially
 
 while(1)
 	
@@ -115,8 +129,115 @@ while(1)
 			delay(250);
 		}
 
+        if((LPC_GPIO4->FIOPIN&0x10000000)==0x00000000) //metaldetector
+ 			{
+				if(tx_flag == 0xff)
+				{
+					LPC_UART0->THR='m';
+					while(tx0_flag==0x00);
+					tx0_flag=0;
+					tx_flag=0;
+				//	delay(250);
+				}
+			}
+			else
+			{
+				if(tx_flag == 0x00)
+				{
+					LPC_UART0->THR='M';
+					while(tx0_flag==0x00);
+					tx0_flag=0;
+					tx_flag = 0xff;
+				 //  delay(250);
+				}
+
+                if((LPC_GPIO4->FIOPIN&0x10000000)==0x00000000) //metaldetector
+ 			{
+				if(tx_flag == 0xff)
+				{
+					LPC_UART0->THR='m';
+					while(tx0_flag==0x00);
+					tx0_flag=0;
+					tx_flag=0;
+				//	delay(250);
+				}
+			}
+			else
+			{
+				if(tx_flag == 0x00)
+				{
+					LPC_UART0->THR='M';
+					while(tx0_flag==0x00);
+					tx0_flag=0;
+					tx_flag = 0xff;
+				 //  delay(250);
+				}
+		}
+		}
+
     }
 
+void UART0_Init(void)
+{
+	LPC_SC->PCONP |= 0x00000008;			//UART0 peripheral enable
+	LPC_PINCON->PINSEL0 |= 0x00000050;
+	LPC_UART0->LCR = 0x00000083;			//enable divisor latch, parity disable, 1 stop bit, 8bit word length
+	LPC_UART0->DLM = 0X00; 
+	LPC_UART0->DLL = 0x1A;      			//select baud rate 9600 bps
+	LPC_UART0->LCR = 0X00000003;
+	LPC_UART0->FCR = 0x07;
+	LPC_UART0->IER = 0X03;	   				//select Transmit and receive interrupt
+
+	NVIC_EnableIRQ(UART0_IRQn);				//Assigning channel
+}
+
+void UART0_IRQHandler(void)
+{
+	unsigned long Int_Stat;
+	Int_Stat = LPC_UART0->IIR;				//reading the data from interrupt identification register
+	Int_Stat = Int_Stat & 0x06;				//masking other than txmit int & rcve data indicator
+
+	if((Int_Stat & 0x02)== 0x02)			//transmit interrupt
+	{
+		tx0_flag = 0xff;
+	}
+	else
+	{
+		rxdata=LPC_UART0->RBR;
+	}		
+}
+//
+void UART1_Init(void)
+{
+	LPC_SC->PCONP |= 0x00000010;			//UART0 peripheral enable
+	LPC_PINCON->PINSEL4 |= 0x0000000A;
+	LPC_UART1->LCR = 0x00000083;			//enable divisor latch, parity disable, 1 stop bit, 8bit word length
+ 	LPC_UART1->DLM = 0X00; 
+	LPC_UART1->DLL = 0x1A;      			//select baud rate 9600 bps
+	LPC_UART1->LCR = 0X00000003;
+	LPC_UART1->FCR = 0x07;
+	LPC_UART1->IER = 0X03;	   				//select Transmit and receive interrupt
+
+	NVIC_EnableIRQ(UART1_IRQn);				//Assigning channel
+}
+//
+void UART1_IRQHandler(void)
+{
+	unsigned long Int_Stat;
+	Int_Stat = LPC_UART1->IIR;				//reading the data from interrupt identification register
+	Int_Stat = Int_Stat & 0x06;				//masking other than txmit int & rcve data indicator
+
+	if((Int_Stat & 0x02)== 0x02)			//transmit interrupt
+	{
+		tx1_flag = 0xff;
+	}
+	else
+	{
+		uart1rx[z]=LPC_UART1->RBR;
+		z++;
+	}		
+}
+//
 //
 void turn_left(void)
 {
@@ -189,3 +310,21 @@ void temp_value(void)
 }
 //
 //
+
+void automatic(void)
+{
+		LPC_GPIO0->FIOPIN |= TRIG1;
+		delayUS(10);
+		LPC_GPIO0->FIOCLR |= TRIG1;
+
+		while(!(LPC_GPIO0->FIOPIN & ECHO1)); //Wait for a HIGH on ECHO pin
+		startTimer0(); //Start counting
+		while(LPC_GPIO0->FIOPIN & ECHO1); //Wait for a LOW on ECHO pin
+		echoTime1 = stopTimer0(); //Stop counting and save value(us) in echoTime
+
+			
+		//sprintf(vtg1,"%3.2f",distance2);
+
+//		LPC_TIM0->TC = 0X00;
+
+}
