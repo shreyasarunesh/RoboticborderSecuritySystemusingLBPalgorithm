@@ -363,6 +363,19 @@ void automatic(void)
 		    LPC_GPIO1->FIOSET = 0x02000000;
 			 delay(400000);
 		}
+		if(distance1>=30&&distance2<=29)
+		{
+			LPC_GPIO1->FIOCLR = 0x0F000000;
+			LPC_GPIO1->FIOSET = 0x06000000;
+  			delay(400000);
+  			LPC_GPIO1->FIOCLR = 0x0F000000;
+  			LPC_GPIO1->FIOSET = 0x0A000000;
+  			delay(400000);
+  			LPC_GPIO1->FIOCLR = 0x0F000000;
+  			LPC_GPIO1->FIOSET = 0x08000000;
+  			delay(400000);
+		}
+
 		
 
 	}
