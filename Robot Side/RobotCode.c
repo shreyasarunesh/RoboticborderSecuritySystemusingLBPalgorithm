@@ -376,7 +376,11 @@ void automatic(void)
   			delay(400000);
 		}
 
-		
+		if(distance1<=29&&distance2<=29)
+		{
+			LPC_GPIO1->FIOCLR = 0x0F000000;
+			LPC_UART0->THR='L';
+		}
 
 	}
 
