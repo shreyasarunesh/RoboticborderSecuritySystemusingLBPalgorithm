@@ -21,7 +21,7 @@ void arm_backward(void);
 void temp_value(void);
 void stop(void);
 void stop2(void);
-
+void automatic(void);
 unsigned long int r=0, i = 0,z=0,j;
 unsigned char tx0_flag=0;
 unsigned char rxdata;
@@ -102,6 +102,12 @@ while(1)
 			arm_backward();
 			rxdata=0;
         }
+
+         if(rxdata=='A')
+		{
+			automatic();
+			rxdata=0;
+		}
 
         if(rxdata=='T')
 		{
@@ -308,8 +314,6 @@ void temp_value(void)
 	  sprintf(vtg,"%3.2f",in_vtg1);
 	
 }
-//
-//
 
 void automatic(void)
 {
@@ -323,8 +327,8 @@ void automatic(void)
 		echoTime1 = stopTimer0(); //Stop counting and save value(us) in echoTime
 
 		distance1 = ((0.0343 * echoTime1)*10)/2;	
-		//sprintf(vtg,"%3.2f",distance1);
-//		LPC_TIM0->TC = 0x00;
+		sprintf(vtg,"%3.2f",distance1);
+		LPC_TIM0->TC = 0x00;
 
 		LPC_GPIO0->FIOPIN |= TRIG2;
 		delayUS(10);
@@ -336,8 +340,17 @@ void automatic(void)
 		echoTime2 = stopTimer1(); //Stop counting and save value(us) in echoTime
 
 		distance2 = ((0.0343 * echoTime2)*10)/2;	
-		//sprintf(vtg1,"%3.2f",distance2);
+		sprintf(vtg1,"%3.2f",distance2);
 
-//		LPC_TIM0->TC = 0X00;
+		LPC_TIM0->TC = 0X00;
+		
+		if(distance1>=30&&distance2>=30)
+		{
+				LPC_GPIO1->FIOCLR = 0x0F000000;
+			  LPC_GPIO1->FIOSET = 0x0A000000;
+			  LPC_UART0->THR='l';
+    }
 
-}
+    
+//
+//
