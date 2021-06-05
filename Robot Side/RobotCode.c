@@ -1,5 +1,6 @@
 #include<LPC17xx.h>
 #include<stdio.h>
+
 #include "ocf_lpc176x_lib.h"
 #define	Ref_Vtg		3.300
 #define TRIG1 (1<<10) //P0.10
@@ -14,10 +15,13 @@ void turn_left(void);
 void turn_right(void);
 void forward(void);
 void reverse(void);
+
 void hold(void);
 void release(void);
 void arm_forward(void);
 void arm_backward(void);
+void UART0_IRQHandler(void);
+void UART1_IRQHandler(void);
 void temp_value(void);
 void stop(void);
 void stop2(void);
@@ -38,6 +42,7 @@ unsigned int adc_temp;
 int echoTime1=0,echoTime2=0;
 float distance1=0,distance2=0;
 
+
 int main(void)
 {
 initTimer0(); //Init Timer for delay functions - defined in ocf_lpc176x_lib.c
@@ -50,7 +55,7 @@ LPC_GPIO1->FIODIR = 0x0F000000;
 LPC_GPIO2->FIODIR = 0x00003C00;
 LPC_PINCON->PINSEL3 |= 0xC0000000;		//P1.31 as AD0.5
 LPC_SC->PCONP |= (1<<12);				//enable the peripheral ADC
-
+	//
 LPC_GPIO0->FIODIR |= TRIG1;    //Set P0.2(TRIG) as output
 LPC_GPIO0->FIODIR &= ~(ECHO1); //Set P0.3(ECHO) as input (explicitly)
 LPC_GPIO0->FIOCLR |= TRIG1;    //Set P0.2 LOW initially
@@ -59,27 +64,33 @@ LPC_GPIO0->FIODIR |= TRIG2;    //Set P0.2(TRIG) as output
 LPC_GPIO0->FIODIR &= ~(ECHO2); //Set P0.3(ECHO) as input (explicitly)
 LPC_GPIO0->FIOCLR |= TRIG2;    //Set P0.2 LOW initially
 
-while(1)
+	while(1)
 	
 	{
-         if(rxdata=='L')
+		if(rxdata=='A')
+		{
+			automatic();
+			rxdata=0;
+		}
+
+		 if(rxdata=='L')
 		{
 				turn_left();
 				rxdata=0;
-        }
-        if(rxdata=='R')
+		}
+		if(rxdata=='N')
+		{
+			stop();
+			rxdata=0;
+		}
+		if(rxdata=='n')
+		{
+			stop2();
+			rxdata=0;
+		}
+		if(rxdata=='R')
 		{
 			turn_right();
-			rxdata=0;
-		}
-        if(rxdata=='H')
-		{
-			hold();
-			rxdata=0;
-		}
-		if(rxdata=='r')
-		{
-			release();
 			rxdata=0;
 		}
 		if(rxdata=='F')
@@ -93,7 +104,17 @@ while(1)
 			reverse();
 			rxdata=0;
 		}
-        if(rxdata=='f')
+		if(rxdata=='H')
+		{
+			hold();
+			rxdata=0;
+		}
+		if(rxdata=='r')
+		{
+			release();
+			rxdata=0;
+		}
+		if(rxdata=='f')
 		{
 			arm_forward();
 			rxdata=0;
@@ -102,9 +123,8 @@ while(1)
 		{
 			arm_backward();
 			rxdata=0;
-        }
-
-        if(rxdata=='T')
+		}
+		if(rxdata=='T')
 		{
 			temp_value();
 			tx0_flag = 0;
@@ -129,36 +149,7 @@ while(1)
 			rxdata=0;
 			delay(250);
 		}
-
-        if(rxdata=='A')
-		{
-			automatic();
-			rxdata=0;
-		}
-
-        if((LPC_GPIO4->FIOPIN&0x10000000)==0x00000000) //metaldetector
- 			{
-				if(tx_flag == 0xff)
-				{
-					LPC_UART0->THR='m';
-					while(tx0_flag==0x00);
-					tx0_flag=0;
-					tx_flag=0;
-				//	delay(250);
-				}
-			}
-			else
-			{
-				if(tx_flag == 0x00)
-				{
-					LPC_UART0->THR='M';
-					while(tx0_flag==0x00);
-					tx0_flag=0;
-					tx_flag = 0xff;
-				 //  delay(250);
-				}
-
-                if((LPC_GPIO4->FIOPIN&0x10000000)==0x00000000) //metaldetector
+		if((LPC_GPIO4->FIOPIN&0x10000000)==0x00000000) //metaldetector
  			{
 				if(tx_flag == 0xff)
 				{
@@ -180,9 +171,8 @@ while(1)
 				 //  delay(250);
 				}
 		}
-		}
-
-    }
+	}
+}
 
 void UART0_Init(void)
 {
@@ -245,6 +235,10 @@ void UART1_IRQHandler(void)
 	}		
 }
 //
+void delay(unsigned int r1)
+{
+	for(r=0;r<r1;r++);
+} 
 //
 void turn_left(void)
 {
@@ -258,7 +252,16 @@ void turn_right(void)
 LPC_GPIO1->FIOCLR =0x0F000000;
 LPC_GPIO1->FIOSET =0x02000000;	
 }
-
+//
+void stop(void)
+{
+LPC_GPIO1->FIOCLR =0x0F000000;	
+}
+//
+void stop2(void)
+{
+LPC_GPIO2->FIOCLR = 0x00003C00;	
+}
 //
 void forward(void)
 {
@@ -273,7 +276,7 @@ LPC_GPIO1->FIOCLR =0x0F000000;
 LPC_GPIO1->FIOSET =0x05000000;	
 	
 }
-
+//
 void hold(void)
 {
 LPC_GPIO2->FIOCLR = 0x00003C00;
@@ -288,7 +291,6 @@ LPC_GPIO2->FIOSET = 0x00001000;
 	
 }
 //
-
 void arm_forward(void)
 {
 LPC_GPIO2->FIOCLR = 0x00003C00;
@@ -302,7 +304,7 @@ LPC_GPIO2->FIOCLR = 0x00003C00;
 LPC_GPIO2->FIOSET = 0x00000400;	
 	
 }
-
+//
 void temp_value(void)
 {
 	  LPC_ADC->ADCR = (1<<5)|(1<<21)|(1<<24);									//0x01200001;//ADC0.5, start conversion and operational	
@@ -315,7 +317,7 @@ void temp_value(void)
 	  sprintf(vtg,"%3.2f",in_vtg1);
 	
 }
-
+//
 void automatic(void)
 {
 		LPC_GPIO0->FIOPIN |= TRIG1;
@@ -351,7 +353,7 @@ void automatic(void)
 			  LPC_GPIO1->FIOSET = 0x0A000000;
 			  LPC_UART0->THR='l';
     }
-        	if(distance1<=29&&distance2>=30)
+		if(distance1<=29&&distance2>=30)
 		{
 			LPC_GPIO1->FIOCLR = 0x0F000000;
 			LPC_GPIO1->FIOSET = 0x09000000;
@@ -375,15 +377,12 @@ void automatic(void)
   			LPC_GPIO1->FIOSET = 0x08000000;
   			delay(400000);
 		}
-
 		if(distance1<=29&&distance2<=29)
 		{
 			LPC_GPIO1->FIOCLR = 0x0F000000;
 			LPC_UART0->THR='L';
 		}
-
 	}
 
-    
-//
-//
+
+	
