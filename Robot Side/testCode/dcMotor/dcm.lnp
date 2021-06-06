@@ -1,0 +1,4 @@
+--device DARMP1 "dcm.o" ".\start.lib" --strict --scatter "dcm.sct" 
+--autoat --summary_stderr --info summarysizes --map --xref --callgraph --symbols 
+--info sizes --info totals --info unused --info veneers 
+ --list ".\dcm.map" -o "dcm.axf"
