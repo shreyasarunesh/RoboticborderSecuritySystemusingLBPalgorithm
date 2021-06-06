@@ -1,0 +1,4 @@
+--device DARMP1 "test1.o" ".\start.lib" "an_lcd.o" "ocf_lpc176x_lib.o" --strict --scatter "test.sct" 
+--autoat --summary_stderr --info summarysizes --map --xref --callgraph --symbols 
+--info sizes --info totals --info unused --info veneers 
+ --list ".\test.map" -o "test.axf"

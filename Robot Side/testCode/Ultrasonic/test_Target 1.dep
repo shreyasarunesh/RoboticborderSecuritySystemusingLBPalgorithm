@@ -1,0 +1,6 @@
+Dependencies for Project 'test', Target 'Target 1': (DO NOT MODIFY !)
+F (.\test1.c)(0x5C834796)(-c --device DARMP1 -D__EVAL -g -O0 --apcs=interwork -I "C:\Keil\ARM\INC\NXP\LPC17xx" -o "test1.o" --omf_browse "test1.crf" --depend "test1.d")
+F (.\start.lib)(0x5C833122)()
+F (.\AN_LCD.c)(0x5C833120)(-c -cpu "Cortex-M3" -D__EVAL -g -O0 -apcs /interwork -o "an_lcd.o" --depend "an_lcd.d")
+F (.\ocf_lpc176x_lib.h)(0x5C833122)()
+F (.\ocf_lpc176x_lib.c)(0x5C833122)(-c -cpu "Cortex-M3" -D__EVAL -g -O0 -apcs /interwork -o "ocf_lpc176x_lib.o" --depend "ocf_lpc176x_lib.d")
