@@ -1,0 +1,1 @@
+-c --device DARMP1 -D__EVAL -g -O0 --apcs=interwork -I "G:\\ARM\INC\NXP\LPC17xx" -o "an_lcd.o" --omf_browse "an_lcd.crf" --depend "an_lcd.d" "AN_LCD.c"
