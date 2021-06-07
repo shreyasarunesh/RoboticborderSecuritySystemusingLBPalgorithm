@@ -3,11 +3,20 @@
 #define full 5.00
 #define low  0.00
 #define mid  2.50
-float v1,v2
+float v1,v2,v3,v4;
+int tswitch=13;
+void setup() {
+  // put your setup code here, to run once:
+  LCD.begin(20,4);
+  pinMode(A0,INPUT);
+  pinMode(A1,INPUT);
+  pinMode(A2,INPUT);
+  Serial.begin(9600);
  
 }
 void serialEvent()
-{
+ 
+ {
   Serial.println("n");
  }
  else
@@ -30,5 +39,3 @@ void serialEvent()
   }
  
 }
-
-
