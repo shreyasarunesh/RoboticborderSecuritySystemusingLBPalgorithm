@@ -39,17 +39,17 @@ void serialEvent()
   if(Serial.available())
   {
     rxtemp = (char)Serial.read();
-    if(rxflag==255)
-    {
-      temp[rxcount]=rxtemp;
-      rxcount++;
-      LCD.print(rxtemp);
+    //if(rxflag==255)
+    //{
+      //temp[rxcount]=rxtemp;
+      //rxcount++;
+      //LCD.print(rxtemp);
       
     //}
-    else if(rxcount==2)
+    /*else if(rxcount==2)
     {
       rxcount=0;
-    
+    }*/
   }
   }
 
@@ -57,21 +57,21 @@ void loop() {
   // put your main code here, to run repeatedly:
   readValue=analogRead(A0);
   v1=(5./1023.)*readValue;
-  Serial.println(voltage);
+  //Serial.println(voltage);
 
   readValue=analogRead(A1);
   v2=(5./1023.)*readValue;
-  Serial.println(voltage);
+  //Serial.println(voltage);
 
   readValue=analogRead(A2);
   v3=(5./1023.)*readValue;
-  Serial.println(voltage);
+  //Serial.println(voltage);
 
   readValue=analogRead(A3);
   v4=(5./1023.)*readValue;
-  Serial.println(voltage);
-  Serial.println(" ");
-  delay(2000);
+  //Serial.println(voltage);
+  //Serial.println(" ");
+  //delay(2000);
   if(v1==full)
   {
     Serial.println("F");
@@ -132,7 +132,7 @@ void loop() {
   if(rxtemp=='T')
   {
     rxflag = '1';
-    Serial.println(rxtemp);
+   // Serial.println(rxtemp);
     LCD.setCursor(0,1);
     LCD.print("temperature=");
     rxtemp=0;
@@ -153,7 +153,7 @@ int  val = digitalRead(tswitch);
   }
   if(rxflag=='1')
   {
-    Serial.println('R');
+    //Serial.println('R');
       if((rxcount<'7')&(rxtemp != 0))
       {
           //Serial.println('D');
