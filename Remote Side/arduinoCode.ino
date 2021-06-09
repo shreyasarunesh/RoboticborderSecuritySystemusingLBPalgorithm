@@ -1,4 +1,5 @@
 #include<LiquidCrystal.h>
+LiquidCrystal LCD(6,7,5,3,4,2);
 int readValue,temp2;
 char temp[11];
 char rxtemp;
@@ -11,7 +12,28 @@ float temperature;
 #define mid  2.50
 float v1,v2,v3,v4;
 int tswitch=13;
-
+void setup()
+{
+  // put your setup code here, to run once:
+  LCD.begin(20,4);
+  pinMode(A0,INPUT);
+  pinMode(A1,INPUT);
+  pinMode(A2,INPUT);
+  pinMode(A3,INPUT);
+  pinMode(13,INPUT);
+  digitalWrite(tswitch,HIGH);
+  Serial.begin(9600);
+  temp[0] = '0';
+  temp[1] = '1';
+  temp[2] = '2';
+  temp[3] = '3';
+  temp[4] = '4';
+  temp[5] = '5';
+  temp[6] = '6';
+  temp[7] = '7';
+  temp[8] = '8';
+  temp[9] = '9';
+}
 void serialEvent()
 {
   if(Serial.available())
