@@ -1,5 +1,8 @@
-#include<LiquidCrystal.h>
 
+char rxflag;
+char rxcount;
+char metal,vtg1,vtg2;
+float temperature;
 #define full 5.00
 #define low  0.00
 #define mid  2.50
@@ -12,30 +15,27 @@ void setup()
   pinMode(A0,INPUT);
   pinMode(A1,INPUT);
   pinMode(A2,INPUT);
-}
+  pinMode(A3,INPUT);
+  pinMode(13,INPUT);
 
   }
-
 
 void loop() {
   // put your main code here, to run repeatedly:
   readValue=analogRead(A0);
   v1=(5./1023.)*readValue;
-  //Serial.println(voltage);
 
   readValue=analogRead(A1);
   v2=(5./1023.)*readValue;
-  //Serial.println(voltage);
+
 
   readValue=analogRead(A2);
   v3=(5./1023.)*readValue;
-  //Serial.println(voltage);
+
 
   readValue=analogRead(A3);
   v4=(5./1023.)*readValue;
-  //Serial.println(voltage);
-  //Serial.println(" ");
-  //delay(2000);
+
   if(v1==full)
   {
     Serial.println("F");
@@ -65,5 +65,22 @@ void loop() {
     Serial.println("N");
     
   }
+  if(v3==full)
+  {
+    Serial.println("f");
+    delay(500);
+    v2=mid;
+  }
+  else if(v4==full)
+  {
+    Serial.println("H");
+    delay(500);
+    v4=mid;
+  }
   
+    
+  }
+
+      }     
+   }
 }
