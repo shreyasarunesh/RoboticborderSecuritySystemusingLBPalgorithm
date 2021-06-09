@@ -177,7 +177,30 @@ int  val = digitalRead(tswitch);
           {
             LCD.print(temp[4]);
           }
-                
+          else if(rxtemp=='5')
+          {
+            LCD.print(temp[5]);
+          }
+           else if(rxtemp=='6')
+          {
+            LCD.print(temp[6]);
+          }
+          else if(rxtemp=='7')
+          {
+            LCD.print(temp[7]);
+          }
+           else  if(rxtemp=='8')
+          {
+            LCD.print(temp[8]);
+          }
+          else if(rxtemp=='9')
+          {
+            LCD.print(temp[9]);
+          }
+          else
+          {
+            LCD.print('.');
+          }
           rxtemp = 0;
       }     
    }
